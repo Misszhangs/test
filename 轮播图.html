@@ -1,0 +1,148 @@
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title></title>
+<style>
+* {margin:0; padding:0; }
+li{list-style:none;}
+
+#div1 {width:850px; height:500px; margin:50px auto;overflow:hidden;position:relative;}
+#div1 ul{ position:absolute;left:0;}
+#div1 ul li{height:500px;}
+#div1 ol {position:absolute;right: 10%;bottom: 10px;z-index:6}
+#div1 ol li{width: 20px;height: 20px;float: left; background: #fff;margin-left: 5px;line-height: 20px;text-align: center;cursor: pointer;border-radius: 50%;}
+#div1 ol li.ac{background: red;color: #fff;}
+#div1>a{text-decoration: none;position: absolute;top: 50%;margin-top: -10px;height: 40px;line-height: 32px;text-align: center;width: 40px;font-size: 40px;vertical-align: middle;color: #fff;background: rgba(0,0,0,0.5);z-index:6;}
+#goPrev{left: 0;}
+#goNext{right: 0;}
+img{width:850px; height:500px;}
+</style>
+</head>
+<body>
+<div id="div1">
+		<ul>
+    	<li><a href="javascript:alert(0);"><img src="img/1.jpg" /></a></li>
+    	<li><a href="javascript:alert(1);"><img src="img/2.jpg" /></a></li>
+    	<li><a href="javascript:alert(2);"><img src="img/3.jpg" /></a></li>
+    	<li><a href="javascript:alert(3);"><img src="img/4.jpg" /></a></li>
+    	<li><a href="javascript:alert(4);"><img src="img/5.jpg" /></a></li>
+    	
+       </ul>
+    <ol>
+    	
+    </ol>
+    <a href="javascript:;" id="goPrev">&laquo;</a>
+    <a href="javascript:;" id="goNext">&raquo;</a>
+    <script>
+    var div1=document.querySelector("#div1");
+ 	var ul=document.querySelector("ul");
+	var lis=document.querySelectorAll("li");
+	var lastli=lis[0].cloneNode(true);
+    ul.appendChild(lastli);
+    var liss= ul.querySelectorAll("li");
+	var btns=[];
+	var ol=document.querySelector("ol");
+	var goNext=document.querySelector("#goNext");
+	var goPrev=document.querySelector("#goPrev");
+	var img=document.querySelector("img");
+	var picHeight=img.offsetHeight;
+	console.log( picHeight);
+	var index=0;//记录当前的索引
+	var lastindex=0;
+	var timer="";
+	for(var i=0;i<liss.length-1;i++)
+		{
+			var li=document.createElement("li");
+			li.innerHTML=i+1;
+		    ol.appendChild(li);	
+		    //将li放在空数组中btns
+		    btns.push(li);
+		    btns[0].className="ac";
+		}
+		//给每个按钮注册点击事件
+	for(let i=0;i<btns.length;i++){
+			btns[i].onclick=function(){
+				animate(ul,-picHeight*i);
+				this.classList.add("ac");
+				btns[lastindex].classList.remove("ac");
+				lastindex=i;
+				index=i;
+				
+			}
+			
+	}
+	goNext.onclick=function(){
+		//当前用户看到的是第一张，但实际是第6张
+		if(index==liss.length-1)
+		{
+			ul.style.top=0;
+			index=0;
+			lastindex=index;
+		}
+		index++;//index=5;
+		//当前用户看到的是第一张，但实际是第6张
+		animate(ul,-picHeight*index);
+		if(index==liss.length-1)
+		{
+			btns[0].classList.add("ac");
+			btns[lastindex].classList.remove("ac");
+		}
+		else{
+			ac();
+		}
+		}
+		goPrev.onclick=function(){
+		if(index==0)
+		{
+			index = 5;
+     		ul.style.top = -picHeight*index + "px";//用户看到的最后一张，其实是最后一张
+		}
+		    index--;
+		    animate(ul,-picHeight*index);
+			ac();
+	};
+	//自动播放
+	div1.onmouseleave=(function zd(){
+		timer=setInterval(function(){
+			goNext.onclick();
+		},3000);
+		return zd;
+	})();
+	div1.onmouseenter=function(){
+		clearInterval(timer);
+	}
+	//按钮增加样式
+	 function ac(){
+		 	btns[index].classList.add("ac");
+			btns[lastindex].classList.remove("ac");
+			lastindex=index;
+		 }
+	 //自定义一个动画函数让某个元素移动到某个位置
+		 function animate(obj,traget){
+		 	clearInterval(obj.timer);
+		 	obj.timer=setInterval(function(){
+		 		//获取元素的当前位置
+		 		var current=obj.offsetTop;
+		 		//设置每一步的移动的距离
+		 		var step=10;
+		 		step=current<traget?step:-step;
+		 		current+=step;
+		 		if(Math.abs(current-traget)>Math.abs(step))
+		 		{
+		 			obj.style.top=current+"px";
+		 			
+		 		}
+		 		else{
+		 			clearInterval(obj.timer);
+		 			//判断traget-current的值，如果小于了10，就直接让left到目标位置。
+		 			obj.style.top=traget+"px";
+		 		}
+		 		
+		 	},5)
+		 };
+    </script>
+</div>
+</body>
+</html>
